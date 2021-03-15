@@ -22,7 +22,7 @@ var renderer, scene, camera;
 var stats;
 var arToolKitSource, arToolKitContext;
 var markerHiro;
-
+var column,status = 0;
 var theta = 0;
 
 init();
@@ -45,14 +45,18 @@ function init() {
 
 	stats = new Stats();
 	document.body.appendChild( stats.dom );
-
+	
+	
 	// init scene and camera
 	scene	= new THREE.Scene();
 	
 	// Create a BASIC camera
 	camera = new THREE.Camera();
 	scene.add(camera);
-
+	
+	var pointLight = new THREE.PointLight (0xffffff);
+	pointLight.position.set (100,200,-100);
+	scene.add (pointLight);
 	////////////////////////////////////////////////////////////////////////////////
 	//          handle arToolkitSource
 	////////////////////////////////////////////////////////////////////////////////
@@ -120,10 +124,16 @@ function addMarkerHiro(){
 	mesh.position.y	= 0.5
 	markerRoot.add (mesh);
 */
-
-	var ball = new THREE.Mesh (new THREE.SphereGeometry (0.1, 20,20), new THREE.MeshNormalMaterial());
+	
+	
+	var ball = new THREE.Mesh (new THREE.SphereGeometry (0.2, 20,20), new THREE.MeshNormalMaterial());
 	markerRoot.add (ball);
 	ball.position.y = 0.1;
+	
+	 column = new THREE.Mesh (new THREE.CylinderGeometry(0.25,0.25,0.5,32), new THREE.MeshNormalMaterial());
+	markerRoot.add(column);
+	//scene.add(cloumn);
+	column.position.set(0,0.25,0);
 	
 	var grid = new THREE.GridHelper (1, 10, 'red', 'white');
 	markerRoot.add (grid);
@@ -132,12 +142,25 @@ function addMarkerHiro(){
 }	
 
 function animate() {
+	
+	
 	requestAnimationFrame (animate);
 	stats.update();
 	
 	if( arToolkitSource.ready === false )	return
 	arToolkitContext.update( arToolkitSource.domElement )
 
+	if(status == 0){
+		column.position.y += 0.01;
+		if(column.position.y > 1)
+			status = 1;
+	}
+	else if(status == 1){
+		column.position.y -= 0.01;
+		if(column.position.y < 0.25)
+			status = 0;
+	}
+	
 	theta += 0.01;
 	markerHiro.children[0].position.set (0.5*Math.sin(theta), 0.1, 0.5*Math.cos(theta));
 	
