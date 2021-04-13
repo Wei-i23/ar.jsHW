@@ -198,7 +198,7 @@ function init() {
 	//markerRoot.add (pointer);
 	//markerRoot.add(button1);
 	
-	if (isActive) {
+	if (_iOSDevice) {
     	window.addEventListener('touchstart', onTouchStart, false);
     	// touchend ... use the same callback as mouseup
 	} else {
