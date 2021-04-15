@@ -140,7 +140,7 @@ function init() {
 	
 	var pointLight = new THREE.PointLight (0xffffff);
 	pointLight.position.set (100,200,-100);
-	scene.add (pointLight);
+	//scene.add (pointLight);
 	
 	//暗光
 	var ambientLight = new THREE.AmbientLight(0x000000);
@@ -227,6 +227,8 @@ function makeRoot() {
 
 	// add a boxGeometry
 
+	var pointLight = new THREE.PointLight (0xffffff);
+	pointLight.position.set (100,200,-100);
 	group = new THREE.Group();
 	
 	
@@ -250,16 +252,16 @@ function makeRoot() {
 	
 	pointer = new THREE.Group();
 	
-	let p_geometry = new THREE.CylinderGeometry(0,0.3,0.5,32);
-	let p_material = new THREE.MeshPhongMaterial({color:0x000000,transparent: true, opacity:0.4});
+	let p_geometry = new THREE.CylinderGeometry(0,0.1,0.5,32);
+	let p_material = new THREE.MeshPhongMaterial({color:0xffffff,transparent: true, opacity:0.4});
 	p = new THREE.Mesh(p_geometry,p_material);
 	
-	p.position.set(0,0.1,-0.33);
+	p.position.set(0,0.1,-0.25);
 	p.rotation.z = Math.PI/2;
 	p.rotation.y = -Math.PI/2;
 	
-	let p1_geometry = new THREE.CylinderGeometry(0.3,0.3,0.1,32);
-	let p1_material = new THREE.MeshPhongMaterial({color:0x000000,transparent: true, opacity:0.4});
+	let p1_geometry = new THREE.CylinderGeometry(0.1,0.1,0.1,32);
+	let p1_material = new THREE.MeshPhongMaterial({color:0xffffff,transparent: true, opacity:0.4});
 	p1 = new THREE.Mesh(p1_geometry,p1_material);
 	p1.position.set(0,0.1,0);
 	p1.rotation.z = Math.PI/2;
@@ -268,6 +270,7 @@ function makeRoot() {
 	
 	pointer.add(p);
 	pointer.add(p1);
+	pointer.add(pointLight);
 	
 	markerRoot.add (group);	
 	markerRoot.add (pointer);
