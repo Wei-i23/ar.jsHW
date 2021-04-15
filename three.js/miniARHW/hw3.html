@@ -247,7 +247,7 @@ function makeRoot() {
 	pointer = new THREE.Group();
 	
 	let p_geometry = new THREE.CircleGeometry(0.3,0,0,6.3);
-	let p_material = new THREE.MeshBasicMaterial({color:0x000000});
+	let p_material = new THREE.MeshPhongMaterial({color:0x000000,transparent: true, opacity:0.2});
 	p = new THREE.Mesh(p_geometry,p_material);
 	
 	p.position.set(0,0.1,-0.3);
@@ -255,7 +255,7 @@ function makeRoot() {
 	p.rotation.x = -Math.PI/2;
 	
 	let p1_geometry = new THREE.CircleGeometry(0.3,32);
-	let p1_material = new THREE.MeshBasicMaterial({color:0x000000});
+	let p1_material = new THREE.MeshBasicMaterial({color:0x000000,transparent: true, opacity:0.2});
 	p1 = new THREE.Mesh(p1_geometry,p1_material);
 	p1.position.set(0,0.1,0);
 	p.rotation.z = Math.PI/2;
