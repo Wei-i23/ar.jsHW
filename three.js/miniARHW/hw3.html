@@ -53,7 +53,7 @@ var arToolKitSource, arToolKitContext;
 var markerRoot;
 var group,pointer;
 var angle = 0,omega = 0;
-var isActive = false;
+var isActive = false,state=1;
 var status;
 var button,button1;
 var whRatio, halfW, halfH;
@@ -206,7 +206,8 @@ function init() {
 	
 	if (_iOSDevice) {
     	window.addEventListener('touchstart', onTouchStart, false);
-    	// touchend ... use the same callback as mouseup
+    	window.addEventListener('touchend', onTouchEnd, false);
+		// touchend ... use the same callback as mouseup
 	} else {
 		window.addEventListener ('mousedown', onMouseDown, false);
 		window.addEventListener ('mouseup', onMouseUp, false);
@@ -304,13 +305,13 @@ function animate() {
 	button1.mesh.material.visible = markerRoot.visible;
 	
 	
-	console.log(button1.mesh.position);
+	//console.log(button1.mesh.position);
 	renderer.render (sceneHUD, cameraHUD);
 	
 	var dt = 0.2;
 	var maxOmega = 10;
 	
-	if(isActive == true){
+	if(isActive){
 		omega = omega + 5*dt;
 	}
 	else{
@@ -324,7 +325,7 @@ function animate() {
 	
 	var Angle = (angle % (Math.PI*2));
 	
-	if(omega == 0 && isActive == false){
+	
 		
 		if(Angle >=0 && Angle < Math.PI*2/3){
 			document.getElementById("text").innerHTML = 'green'; 
@@ -338,7 +339,7 @@ function animate() {
 			document.getElementById("text").innerHTML = 'blue'; 
 			document.getElementById("text").style.color = 'blue';
 		}
-	}
+	
 	
 	renderer.render (scene, camera);	
 }
@@ -381,7 +382,7 @@ function pickCompute (ndcX, ndcY) {
 
 function onMouseUp (event) {
 	// do nothing yet ...
-	down = false;
+	isAction = false;
 }
 
 function onMouseDown (event) {
@@ -391,21 +392,35 @@ function onMouseDown (event) {
 	let ndcY = -(event.clientY / window.innerHeight) * 2 + 1;
 
 	pickCompute (ndcX, ndcY);		
-	down = true;
+	if(state.length >0)	
+		isAction= true;
 }	
 
 function onTouchStart (event) {
 	console.log ('in touch start')
 
-   if (event.touches.length == 1) {
-        
-		event.preventDefault();
-		let ndcX = ( event.touches[0].pageX / window.innerWidth ) * 2 - 1;
-		let ndcY = - ( event.touches[0].pageY / window.innerHeight ) * 2 + 1;
 	
-		pickCompute (ndcX, ndcY);		
+	   if (event.touches.length == 1) {
+			
+			event.preventDefault();
+			let ndcX = ( event.touches[0].pageX / window.innerWidth ) * 2 - 1;
+			let ndcY = - ( event.touches[0].pageY / window.innerHeight ) * 2 + 1;
+		
+			pickCompute (ndcX, ndcY);		
+			
+		}	
+}
+
+function onTouchEnd (event) {
+	console.log ('in touch end')
+	event.preventDefault();
+   if (isAction) {
+        
+		isAction=!isAction;
+				
 		
 	}	
-}	
+}
+	
 </script>
 </body>
