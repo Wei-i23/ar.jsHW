@@ -67,6 +67,10 @@ animate();
 
 function init() {
 
+	let _iOSDevice = !!navigator.platform.match(/iPhone|iPod|iPad/);
+
+	console.log ('iOS: ' + _iOSDevice)
+	
 	// init renderer
 	renderer	= new THREE.WebGLRenderer({
 		// antialias	: true,
@@ -79,10 +83,10 @@ function init() {
 	renderer.domElement.style.top = '0px'
 	renderer.domElement.style.left = '0px'
 	document.body.appendChild( renderer.domElement );
-
+/*
 	stats = new Stats();
 	document.body.appendChild( stats.dom );
-	
+*/	
 	// width/height ratio
 	whRatio = window.innerWidth/window.innerHeight;
 
@@ -382,7 +386,7 @@ function pickCompute (ndcX, ndcY) {
 
 function onMouseUp (event) {
 	// do nothing yet ...
-	isAction = false;
+	isActive = false;
 }
 
 function onMouseDown (event) {
@@ -393,7 +397,7 @@ function onMouseDown (event) {
 
 	pickCompute (ndcX, ndcY);		
 	if(state.length >0)	
-		isAction= true;
+		isActive= true;
 }	
 
 function onTouchStart (event) {
@@ -414,9 +418,9 @@ function onTouchStart (event) {
 function onTouchEnd (event) {
 	console.log ('in touch end')
 	event.preventDefault();
-   if (isAction) {
+   if (isActive) {
         
-		isAction=!isAction;
+		isActive=!isActive;
 				
 		
 	}	
