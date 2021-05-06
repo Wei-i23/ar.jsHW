@@ -1,0 +1,268 @@
+<html>
+<head>
+<style>
+#info {
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  color: #ffff00
+}
+
+body {
+  overflow: hidden;
+}
+
+
+</style>
+</head>
+<body>
+	<div id="info">Cannon Firing</div>
+	
+	<script src="https://threejs.org/build/three.min.js"></script>
+	<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+	<script src="https://jyunming-chen.github.io/tutsplus/js/KeyboardState.js"></script>
+	
+	<script type ="module">
+javascript:(function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='https://mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);})()
+
+var camera, scene, renderer;
+var cannon;
+var clock;
+var ball;
+var balls=[];
+var pos, vel, force;
+var barrel;
+var yaw,pitch;
+var keyboard = new KeyboardState();
+var parabola;
+//拋物線
+var x0, dx,xi,yi;
+var i = 1;
+var nowPos, prePos;
+
+class Ball{
+	constructor(mesh,vel,pos,force){
+		this.mesh = mesh;
+		this.vel = vel;
+		this.pos = pos;
+		this.force = force;
+		scene.add(this.mesh);
+	}
+}
+
+init();
+animate();
+
+function init() {
+
+	scene = new THREE.Scene();
+
+	renderer = new THREE.WebGLRenderer();
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.setClearColor(0x888888);
+	document.body.appendChild(renderer.domElement);
+
+	camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000);
+	camera.position.set (0,150,150);
+	let controls = new THREE.OrbitControls(camera, renderer.domElement);
+	var gridXZ = new THREE.GridHelper(200, 20, 'red', 'white');
+	scene.add(gridXZ);
+
+  ///////////////////////////////////////////////////////////
+
+	cannon = makeCannon();
+	scene.add (cannon);
+	ball = new THREE.Mesh (new THREE.SphereGeometry(2,8,8), new THREE.MeshBasicMaterial({color:'yellow',wireframe:true}));
+  
+	clock = new THREE.Clock();
+  
+	//// settings //////////////////////
+	barrel = cannon.children[1]
+	barrel.rotation.z = -Math.PI/6; // barrel angle
+	cannon.rotation.y = -Math.PI/6;
+	makeParabola_first();
+	
+	//scene.add (makeParabola (-.125, 4, 10));
+	/*
+	x0 = 4 - Math.sqrt(30/.125);
+	dx = 2*Math.sqrt(30/.125);
+	
+	nowPos = new THREE.Vector3();
+	prePos = new THREE.Vector3();
+	prePos.set (x0,0,0);*/
+		
+	// turning
+	yaw = 0;
+	pitch = 0;
+	
+
+}
+
+function makeCannon() {
+	let cannon = new THREE.Group();
+	let body = new THREE.Mesh (new THREE.SphereGeometry(
+    10,20,20, Math.PI+Math.PI*0.1,Math.PI*1.8,0,Math.PI/2), new THREE.MeshNormalMaterial());
+	let barrelPart = new THREE.Group();
+	barrel = new THREE.Mesh (new THREE.CylinderGeometry(2,2,20,18), new THREE.MeshNormalMaterial());
+	barrelPart.add (barrel);
+	barrel.position.y = 10;
+ 
+	cannon.add (body, barrelPart);
+	return cannon;
+}
+function computeInitPosVel() {
+	barrel = cannon.children[1];
+	const SPEED = 25;
+	vel = barrel.localToWorld (new THREE.Vector3(0,20,0)).sub (
+	barrel.localToWorld (new THREE.Vector3(0,0,0))).setLength (SPEED);
+	//barrel的初始位置，local位置轉成世界座標
+	pos = barrel.localToWorld (new THREE.Vector3(0,22,0));
+	force = new THREE.Vector3(0,-10,0);
+	return [vel,pos,force];
+}
+//拋物線
+function makeParabola_first () {
+	/*let xRange = Math.sqrt(-a*c)*2/a;
+	const N = 20;
+	let dx = xRange/20;
+	let x0 = b - xRange/2;*/
+	let points = [];
+	
+	const SPEED = 25;
+	let vel = barrel.localToWorld(new THREE.Vector3(0,20,0)).sub(
+	barrel.localToWorld(new THREE.Vector3(0,0,0))).setLength(SPEED);
+    let pos = barrel.localToWorld(new THREE.Vector3(0,22,0));
+	let force = new THREE.Vector3(0,-10,0);
+	
+	for (let i = 0; pos.y > 0; i++) {
+		/*xi = x0 + i*dx;
+		yi = a*(xi-b)*(xi-b) + c;*/
+		points.push(pos.clone());
+		//points.push (new THREE.Vector3(xi,yi,0));
+		
+		vel.add(force.clone().multiplyScalar(0.1));
+		pos.add(vel.clone().multiplyScalar(0.1));
+	}
+	let geometry = new THREE.BufferGeometry().setFromPoints(points);
+	parabola = new THREE.Line (geometry, new THREE.LineDashedMaterial({color:'cyan'}));
+	parabola.computeLineDistances(); // required for LineDashedMaterial
+	//return parabola;
+	scene.add(parabola);
+}
+
+function makeParabola () {
+	/*let xRange = Math.sqrt(-a*c)*2/a;
+	const N = 20;
+	let dx = xRange/20;
+	let x0 = b - xRange/2;*/
+	let points = [];
+	
+	const SPEED = 25;
+	let vel = barrel.localToWorld(new THREE.Vector3(0,20,0)).sub(
+	barrel.localToWorld(new THREE.Vector3(0,0,0))).setLength(SPEED);
+    let pos = barrel.localToWorld(new THREE.Vector3(0,22,0));
+	let force = new THREE.Vector3(0,-10,0);
+	
+	for (let i = 0; pos.y > 0; i++) {
+		/*xi = x0 + i*dx;
+		yi = a*(xi-b)*(xi-b) + c;*/
+		points.push(pos.clone());
+		//points.push (new THREE.Vector3(xi,yi,0));
+		
+		vel.add(force.clone().multiplyScalar(0.1));
+		pos.add(vel.clone().multiplyScalar(0.1));
+	}
+	let geometry = new THREE.BufferGeometry().setFromPoints(points);
+	parabola.geometry = geometry;
+	parabola.computeLineDistances();
+}
+
+function animate() {
+	keyboard.update();
+	let dt = clock.getDelta();
+	
+	requestAnimationFrame(animate);
+	render();
+	
+	
+	for(let i=0;i<balls.length;i++){
+		if(balls[i].pos.y < 0){
+			scene.remove(balls[i]);
+			balls.splice(i,1);
+			i--;
+			continue;
+		}
+		balls[i].vel.add(balls[i].force.clone().multiplyScalar(dt));
+		balls[i].pos.add(balls[i].vel.clone().multiplyScalar(dt));
+		balls[i].mesh.position.copy(balls[i].pos);
+	}
+	
+	if(keyboard.down('space')){
+		let value = computeInitPosVel();
+		let ball = new Ball(new THREE.Mesh(new THREE.SphereGeometry(2,8,8),
+		new THREE.MeshBasicMaterial({color:'yellow',wireframe:true})));
+		
+		balls.push(ball);
+		balls[balls.length-1].vel = value[0];
+		balls[balls.length-1].pos = value[1];
+		balls[balls.length-1].force = value[2];
+		return;
+	}
+	else{
+		//上下左右控制
+	
+		if (keyboard.down('left')) {
+			yaw += 0.1;
+		} 
+		if (keyboard.down('right')) {
+			yaw -= 0.1;
+		} 
+		if (keyboard.down('up')) {
+			pitch += 0.1;
+		}
+		if (keyboard.down('down')) {
+			pitch -= 0.1;
+		}
+  
+		cannon.rotation.y = yaw;
+		cannon.children[1].rotation.z = pitch;
+	}
+	/*
+	if (pos.y < 0)
+		return;
+  
+	
+	
+	// Euler's method
+	vel.add (force.clone().multiplyScalar(dt));
+	pos.add (vel.clone().multiplyScalar(dt));
+	ball.position.copy (pos);
+	*/
+	
+	/*
+	let xi = x0 + i*dx/100;
+	let yi = -.125*(xi-4)*(xi-4)+30;
+	if (i > 100) {
+		console.log (yi)
+		return;
+	}
+	prePos.copy (nowPos);
+	nowPos.set (xi, yi, 0);
+	ball.position.copy (nowPos);
+	ball.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), nowPos.clone().sub(prePos).normalize());
+  
+	//++i;
+	*/
+	makeParabola();
+}
+
+function render() {
+
+  renderer.render(scene, camera);
+
+}
+</script>
+</body>
+</html>
