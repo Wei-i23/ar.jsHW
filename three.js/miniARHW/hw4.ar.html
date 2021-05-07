@@ -221,9 +221,12 @@ function addMarkerHiro () {
 		} );
 	let geometry	= new THREE.PlaneGeometry(1,1);
 	let mesh	= new THREE.Mesh( geometry, material );
-    mesh.rotation.x = Math.PI/2;
+    mesh.rotation.x = -Math.PI/2;
+	mesh.position.y = -.5;
+	
 	let target = new THREE.Object3D();
 	target.add (mesh);
+	
 	markerRoot.add (target);
 	
 	return markerRoot;
@@ -254,7 +257,8 @@ function animate() {
 	let axis = new THREE.Vector3();
 	axis.crossVectors(point, localCamera).normalize(); // normalization is IMPORTANT!
 	let target = markerHiro.children[0];
-	target.quaternion.setFromAxisAngle (axis, angle);		
+	target.quaternion.setFromAxisAngle (axis, angle);	
+	
 }
 function pickCompute (ndcX, ndcY) {
 
