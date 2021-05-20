@@ -78,7 +78,7 @@ class Cannon{
             this.bullet.update(dt);
             if (this.bullet.pos.y < 0) {
             
-                var vec = this.bullet.main.worldToLocal( markerKanji.localToWorld( new THREE.Vector3() ) );
+                var vec = this.bullet.main.worldToLocal( markerKanji.localToWorld( new THREE.Vector3(0,0,0) ) );
                 var distance = vec.length();
                 if (distance <= 1.1) {
                     markerKanji.children[2].visible = false;
@@ -168,10 +168,10 @@ class Sprite {
   
     update(dt) {
 
-        let localCamera = markerKanji.worldToLocal(new THREE.Vector3());
+        let localCamera = markerKanji.worldToLocal(new THREE.Vector3(0,0,0));
         let point = new THREE.Vector3(0, 0, 1);
         let angle = point.angleTo(localCamera);
-        let axis  = new THREE.Vector3();
+        let axis  = new THREE.Vector3(0,0,0);
         axis.crossVectors(point, localCamera).normalize();
         this.main.quaternion.setFromAxisAngle(axis, angle);
         
@@ -228,6 +228,7 @@ function init() {
 	renderer.domElement.style.left = '0px'
 	document.body.appendChild( renderer.domElement );
 
+	loader =  new THREE.TextureLoader();
     clock = new THREE.Clock();
 	stats = new Stats();
 	document.body.appendChild( stats.dom );
@@ -252,14 +253,6 @@ function init() {
 	arToolkitSource = new THREEx.ArToolkitSource({
 		// to read from the webcam 
 		sourceType : 'webcam',
-
-		// to read from an image
-		// sourceType : 'image',
-		// sourceUrl : THREEx.ArToolkitContext.baseURL + '../data/images/img.jpg',		
-
-		// to read from a video
-		// sourceType : 'video',
-		// sourceUrl : THREEx.ArToolkitContext.baseURL + '../data/videos/headtracking.mp4',		
 	})
 
 	arToolkitSource.init(function onReady(){
@@ -277,9 +270,7 @@ function init() {
 			arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)	
 		}	
 	}
-	////////////////////////////////////////////////////////////////////////////////
-	//          initialize arToolkitContext
-	////////////////////////////////////////////////////////////////////////////////
+	console.log(THREEx.ArToolkitContext.baseURL);
 	
 	arToolkitContext = new THREEx.ArToolkitContext({
 		cameraParametersUrl: THREEx.ArToolkitContext.baseURL + '../data/data/camera_para.dat',
